@@ -58,7 +58,7 @@ namespace cAlgo.Robots
             _volumeInUnits = Symbol.QuantityToVolumeInUnits(VolumeInLots);
 
             fastPrimeAlgoKFMRcore = Indicators.GetIndicator<PrimeAlgoKFMRcore>(MarketData.GetBars(TimeFrame.Renko5), FastMaSource, true, FastMaPeriod);
-            slowprimeAlgoKalmanMeanReversion = Indicators.GetIndicator<primeAlgoKalmanMeanReversion>(TimeFrame.Renko5, FastMaSource, true, SlowMaPeriod);
+            slowprimeAlgoKalmanMeanReversion = Indicators.GetIndicator<primeAlgoKalmanMeanReversion>(MarketData.GetBars(TimeFrame.Renko5), FastMaSource, true, SlowMaPeriod);
 
             fastPrimeAlgoKFMRcore.FilterResult.Line.Color = Color.Blue;
             slowprimeAlgoKalmanMeanReversion.FilterResult.Line.Color = Color.Red;
