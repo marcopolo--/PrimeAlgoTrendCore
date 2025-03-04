@@ -17,14 +17,14 @@ namespace cAlgo.Robots
     {
         private double _volumeInUnits;
 
-        private PrimeAlgoKFMRcore _fastPrimeAlgoKFMRcore;
+        private PrimeAlgoKFMRcore fastPrimeAlgoKFMRcore;
 
-        private primeAlgoKalmanMeanReversion _slowprimeAlgoKalmanMeanReversion;
+        private primeAlgoKalmanMeanReversion slowprimeAlgoKalmanMeanReversion;
 
         [Parameter("Source", Group = "Fast MA")]
         public DataSeries FastMaSource { get; set; }
 
-        [Parameter("Period", DefaultValue = 9, Group = "Fast MA")]
+        [Parameter("Period", DefaultValue = 20, Group = "Fast MA")]
         public int FastMaPeriod { get; set; }
 
         [Parameter("Source", Group = "Slow MA")]
@@ -57,22 +57,22 @@ namespace cAlgo.Robots
         {
             _volumeInUnits = Symbol.QuantityToVolumeInUnits(VolumeInLots);
 
-            _fastWeightedMovingAverage = Indicators.WeightedMovingAverage(FastMaSource, FastMaPeriod);
-            _slowWeightedMovingAverage = Indicators.WeightedMovingAverage(SlowMaSource, SlowMaPeriod);
+            fastPrimeAlgoKFMRcore = Indicators.GetIndicator<PrimeAlgoKFMRcore>(MarketData.GetBars(TimeFrame.Renko5), FastMaSource, true, FastMaPeriod);
+            slowprimeAlgoKalmanMeanReversion = Indicators.GetIndicator<primeAlgoKalmanMeanReversion>(TimeFrame.Renko5, FastMaSource, true, SlowMaPeriod);
 
-            _fastWeightedMovingAverage.Result.Line.Color = Color.Blue;
-            _slowWeightedMovingAverage.Result.Line.Color = Color.Red;
+            fastPrimeAlgoKFMRcore.FilterResult.Line.Color = Color.Blue;
+            slowprimeAlgoKalmanMeanReversion.FilterResult.Line.Color = Color.Red;
         }
 
         protected override void OnBarClosed()
         {
-            if (_fastWeightedMovingAverage.Result.HasCrossedAbove(_slowWeightedMovingAverage.Result, 0))
+            if (fastPrimeAlgoKFMRcore.FilterResult.HasCrossedAbove(slowprimeAlgoKalmanMeanReversion.FilterResult, 0))
             {
                 ClosePositions(TradeType.Sell);
 
                 ExecuteMarketOrder(TradeType.Buy, SymbolName, _volumeInUnits, Label, StopLossInPips, TakeProfitInPips);
             }
-            else if (_fastWeightedMovingAverage.Result.HasCrossedBelow(_slowWeightedMovingAverage.Result, 0))
+            else if (fastPrimeAlgoKFMRcore.FilterResult.HasCrossedBelow(slowprimeAlgoKalmanMeanReversion.FilterResult, 0))
             {
                 ClosePositions(TradeType.Buy);
 
