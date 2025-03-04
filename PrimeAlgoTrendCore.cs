@@ -17,9 +17,9 @@ namespace cAlgo.Robots
     {
         private double _volumeInUnits;
 
-        private WeightedMovingAverage _fastWeightedMovingAverage;
+        private PrimeAlgoKFMRcore _fastPrimeAlgoKFMRcore;
 
-        private WeightedMovingAverage _slowWeightedMovingAverage;
+        private primeAlgoKalmanMeanReversion _slowprimeAlgoKalmanMeanReversion;
 
         [Parameter("Source", Group = "Fast MA")]
         public DataSeries FastMaSource { get; set; }
