@@ -20,6 +20,8 @@ namespace cAlgo.Robots
         private PrimeAlgoKFMRcore fastPrimeAlgoKFMRcore;
 
         private primeAlgoKalmanMeanReversion slowprimeAlgoKalmanMeanReversion;
+        
+        private primeAlgoKalmanMeanReversion longTermprimeAlgoKalmanMeanReversion;
 
         [Parameter("Source", Group = "Fast MA")]
         public DataSeries FastMaSource { get; set; }
@@ -58,7 +60,9 @@ namespace cAlgo.Robots
             _volumeInUnits = Symbol.QuantityToVolumeInUnits(VolumeInLots);
 
             fastPrimeAlgoKFMRcore = Indicators.GetIndicator<PrimeAlgoKFMRcore>(MarketData.GetBars(TimeFrame.Renko5), FastMaSource, true, FastMaPeriod);
-            slowprimeAlgoKalmanMeanReversion = Indicators.GetIndicator<primeAlgoKalmanMeanReversion>(MarketData.GetBars(TimeFrame.Renko5), FastMaSource, true, SlowMaPeriod);
+            slowprimeAlgoKalmanMeanReversion = Indicators.GetIndicator<primeAlgoKalmanMeanReversion>(MarketData.GetBars(TimeFrame.Renko5), SlowMaSource, true, SlowMaPeriod);
+            
+            longTermprimeAlgoKalmanMeanReversion = Indicators.GetIndicator<primeAlgoKalmanMeanReversion>(MarketData.GetBars(TimeFrame.Renko20), FastMaSource, true, 20);
 
             fastPrimeAlgoKFMRcore.FilterResult.Line.Color = Color.Blue;
             slowprimeAlgoKalmanMeanReversion.FilterResult.Line.Color = Color.Red;
@@ -66,15 +70,16 @@ namespace cAlgo.Robots
 
         protected override void OnBarClosed()
         {
-            if (fastPrimeAlgoKFMRcore.FilterResult.HasCrossedAbove(slowprimeAlgoKalmanMeanReversion.FilterResult, 1) && 
-                fastPrimeAlgoKFMRcore.FilterResult.IsRising())
+            Print("Fast 'IsRising / IsFalling': " + fastPrimeAlgoKFMRcore.FilterResult.IsRising() + "/" + fastPrimeAlgoKFMRcore.FilterResult.IsFalling());
+            Print("Slow 'IsRising / IsFalling': " + slowprimeAlgoKalmanMeanReversion.FilterResult.IsRising() + "/" + slowprimeAlgoKalmanMeanReversion.FilterResult.IsFalling());
+            
+            if (fastPrimeAlgoKFMRcore.FilterResult.IsRising() && slowprimeAlgoKalmanMeanReversion.FilterResult.IsRising() && longTermprimeAlgoKalmanMeanReversion.FilterResultUp[1] != double.NaN)
             {
                 ClosePositions(TradeType.Sell);
 
                 ExecuteMarketOrder(TradeType.Buy, SymbolName, _volumeInUnits, Label, StopLossInPips, TakeProfitInPips);
             }
-            else if (fastPrimeAlgoKFMRcore.FilterResult.HasCrossedBelow(slowprimeAlgoKalmanMeanReversion.FilterResult, 1) && 
-                fastPrimeAlgoKFMRcore.FilterResult.IsFalling())
+            else if (fastPrimeAlgoKFMRcore.FilterResult.IsFalling() && slowprimeAlgoKalmanMeanReversion.FilterResult.IsFalling() && longTermprimeAlgoKalmanMeanReversion.FilterResultDown[1] != double.NaN)
             {
                 ClosePositions(TradeType.Buy);
 
