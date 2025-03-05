@@ -59,19 +59,21 @@ namespace cAlgo.Robots
         {
             _volumeInUnits = Symbol.QuantityToVolumeInUnits(VolumeInLots);
 
-            fastPrimeAlgoKFMRcore = Indicators.GetIndicator<PrimeAlgoKFMRcore>(MarketData.GetBars(TimeFrame.Renko5), FastMaSource, true, FastMaPeriod);
-            slowprimeAlgoKalmanMeanReversion = Indicators.GetIndicator<primeAlgoKalmanMeanReversion>(MarketData.GetBars(TimeFrame.Renko5), SlowMaSource, true, SlowMaPeriod);
+            fastPrimeAlgoKFMRcore = Indicators.GetIndicator<PrimeAlgoKFMRcore>(MarketData.GetBars(TimeFrame.Renko5).ClosePrices, true, FastMaPeriod);
+            slowprimeAlgoKalmanMeanReversion = Indicators.GetIndicator<primeAlgoKalmanMeanReversion>(MarketData.GetBars(TimeFrame.Renko5).ClosePrices, true, SlowMaPeriod);
             
-            longTermprimeAlgoKalmanMeanReversion = Indicators.GetIndicator<primeAlgoKalmanMeanReversion>(MarketData.GetBars(TimeFrame.Renko20), FastMaSource, true, 20);
+            longTermprimeAlgoKalmanMeanReversion = Indicators.GetIndicator<primeAlgoKalmanMeanReversion>(MarketData.GetBars(TimeFrame.Renko20).ClosePrices, true, 20);
 
             fastPrimeAlgoKFMRcore.FilterResult.Line.Color = Color.Blue;
             slowprimeAlgoKalmanMeanReversion.FilterResult.Line.Color = Color.Red;
         }
 
-        protected override void OnBarClosed()
+        protected override void OnBar()
         {
             Print("Fast 'IsRising / IsFalling': " + fastPrimeAlgoKFMRcore.FilterResult.IsRising() + "/" + fastPrimeAlgoKFMRcore.FilterResult.IsFalling());
             Print("Slow 'IsRising / IsFalling': " + slowprimeAlgoKalmanMeanReversion.FilterResult.IsRising() + "/" + slowprimeAlgoKalmanMeanReversion.FilterResult.IsFalling());
+            Print("Long Term Trend up: " + longTermprimeAlgoKalmanMeanReversion.FilterResultUp.LastValue);
+            Print("Long Term Trend down: " + longTermprimeAlgoKalmanMeanReversion.FilterResultDown.LastValue);
             
             if (fastPrimeAlgoKFMRcore.FilterResult.IsRising() && slowprimeAlgoKalmanMeanReversion.FilterResult.IsRising() && longTermprimeAlgoKalmanMeanReversion.FilterResultUp[1] != double.NaN)
             {
