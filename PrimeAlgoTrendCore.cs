@@ -66,19 +66,22 @@ namespace cAlgo.Robots
 
         protected override void OnBarClosed()
         {
-            if (fastPrimeAlgoKFMRcore.FilterResult.HasCrossedAbove(slowprimeAlgoKalmanMeanReversion.FilterResult, 0))
+            if (fastPrimeAlgoKFMRcore.FilterResult.HasCrossedAbove(slowprimeAlgoKalmanMeanReversion.FilterResult, 1) && 
+                fastPrimeAlgoKFMRcore.FilterResult.IsRising())
             {
                 ClosePositions(TradeType.Sell);
 
                 ExecuteMarketOrder(TradeType.Buy, SymbolName, _volumeInUnits, Label, StopLossInPips, TakeProfitInPips);
             }
-            else if (fastPrimeAlgoKFMRcore.FilterResult.HasCrossedBelow(slowprimeAlgoKalmanMeanReversion.FilterResult, 0))
+            else if (fastPrimeAlgoKFMRcore.FilterResult.HasCrossedBelow(slowprimeAlgoKalmanMeanReversion.FilterResult, 1) && 
+                fastPrimeAlgoKFMRcore.FilterResult.IsFalling())
             {
                 ClosePositions(TradeType.Buy);
 
                 ExecuteMarketOrder(TradeType.Sell, SymbolName, _volumeInUnits, Label, StopLossInPips, TakeProfitInPips);
             }
         }
+        
 
         private void ClosePositions(TradeType tradeType)
         {
