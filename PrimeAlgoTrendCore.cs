@@ -72,16 +72,16 @@ namespace cAlgo.Robots
         {
             Print("Fast 'IsRising / IsFalling': " + fastPrimeAlgoKFMRcore.FilterResult.IsRising() + "/" + fastPrimeAlgoKFMRcore.FilterResult.IsFalling());
             Print("Slow 'IsRising / IsFalling': " + slowprimeAlgoKalmanMeanReversion.FilterResult.IsRising() + "/" + slowprimeAlgoKalmanMeanReversion.FilterResult.IsFalling());
-            Print("Long Term Trend up: " + longTermprimeAlgoKalmanMeanReversion.FilterResultUp.LastValue);
-            Print("Long Term Trend down: " + longTermprimeAlgoKalmanMeanReversion.FilterResultDown.LastValue);
+            Print("Long Term Trend up: " + longTermprimeAlgoKalmanMeanReversion.FilterResultUp[1]);
+            Print("Long Term Trend down: " + longTermprimeAlgoKalmanMeanReversion.FilterResultDown[1]);
             
-            if (fastPrimeAlgoKFMRcore.FilterResult.IsRising() && slowprimeAlgoKalmanMeanReversion.FilterResult.IsRising() && longTermprimeAlgoKalmanMeanReversion.FilterResultUp[1] != double.NaN)
+            if (fastPrimeAlgoKFMRcore.FilterResult.IsRising() && slowprimeAlgoKalmanMeanReversion.FilterResult.IsRising() && !double.IsNaN(longTermprimeAlgoKalmanMeanReversion.FilterResultUp[1]))
             {
                 ClosePositions(TradeType.Sell);
 
                 ExecuteMarketOrder(TradeType.Buy, SymbolName, _volumeInUnits, Label, StopLossInPips, TakeProfitInPips);
             }
-            else if (fastPrimeAlgoKFMRcore.FilterResult.IsFalling() && slowprimeAlgoKalmanMeanReversion.FilterResult.IsFalling() && longTermprimeAlgoKalmanMeanReversion.FilterResultDown[1] != double.NaN)
+            else if (fastPrimeAlgoKFMRcore.FilterResult.IsFalling() && slowprimeAlgoKalmanMeanReversion.FilterResult.IsFalling() && !double.IsNaN(longTermprimeAlgoKalmanMeanReversion.FilterResultDown[1]))
             {
                 ClosePositions(TradeType.Buy);
 
