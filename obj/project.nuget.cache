@@ -1,0 +1,29 @@
+{
+  "version": 2,
+  "dgSpecHash": "Gva9nY7HIiM=",
+  "success": false,
+  "projectFilePath": "C:\\Users\\ChristianAmstad\\OneDrive - Matrixport Asset Management AG\\Documents\\cAlgo\\Sources\\Robots\\PrimeAlgoTrendCore\\PrimeAlgoTrendCore\\PrimeAlgoTrendCore.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\ChristianAmstad\\.nuget\\packages\\ctrader.automate\\1.0.10\\ctrader.automate.1.0.10.nupkg.sha512"
+  ],
+  "logs": [
+    {
+      "code": "NU1105",
+      "level": "Error",
+      "message": "Unable to find project information for 'C:\\Users\\ChristianAmstad\\OneDrive - Matrixport Asset Management AG\\Documents\\cAlgo\\Sources\\Indicators\\PrimeAlgoKFMRcore\\PrimeAlgoKFMRcore\\PrimeAlgoKFMRcore.csproj'. If you are using Visual Studio, this may be because the project is unloaded or not part of the current solution so run a restore from the command-line. Otherwise, the project file may be invalid or missing targets required for restore.",
+      "libraryId": "C:\\Users\\ChristianAmstad\\OneDrive - Matrixport Asset Management AG\\Documents\\cAlgo\\Sources\\Indicators\\PrimeAlgoKFMRcore\\PrimeAlgoKFMRcore\\PrimeAlgoKFMRcore.csproj",
+      "targetGraphs": [
+        "net6.0"
+      ]
+    },
+    {
+      "code": "NU1105",
+      "level": "Error",
+      "message": "Unable to find project information for 'C:\\Users\\ChristianAmstad\\OneDrive - Matrixport Asset Management AG\\Documents\\cAlgo\\Sources\\Indicators\\primeAlgoKalmanMeanReversion\\primeAlgoKalmanMeanReversion\\primeAlgoKalmanMeanReversion.csproj'. If you are using Visual Studio, this may be because the project is unloaded or not part of the current solution so run a restore from the command-line. Otherwise, the project file may be invalid or missing targets required for restore.",
+      "libraryId": "C:\\Users\\ChristianAmstad\\OneDrive - Matrixport Asset Management AG\\Documents\\cAlgo\\Sources\\Indicators\\primeAlgoKalmanMeanReversion\\primeAlgoKalmanMeanReversion\\primeAlgoKalmanMeanReversion.csproj",
+      "targetGraphs": [
+        "net6.0"
+      ]
+    }
+  ]
+}
