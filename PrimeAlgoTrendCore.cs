@@ -107,9 +107,11 @@ namespace cAlgo.Robots
                 Print(reader.ToString());
             }
 
+            var ltDirection = "";
             
             if (//fastPrimeAlgoKFMRcore.FilterResult.IsFalling() && 
-                slowprimeAlgoKalmanMeanReversion.FilterResult.IsFalling() &&
+                //slowprimeAlgoKalmanMeanReversion.FilterResult.IsFalling() &&
+                ltDirection.Contains("up") &&
                 double.IsNaN(longTermprimeAlgoKalmanMeanReversion.FilterResultUp.LastValue) &&
                 double.IsNaN(longTermprimeAlgoKalmanMeanReversion.FilterResultDown.LastValue)
                 )
@@ -118,7 +120,8 @@ namespace cAlgo.Robots
             }
             
             if (//fastPrimeAlgoKFMRcore.FilterResult.IsRising() &&
-                slowprimeAlgoKalmanMeanReversion.FilterResult.IsRising() &&
+                //slowprimeAlgoKalmanMeanReversion.FilterResult.IsRising() &&
+                ltDirection.Contains("down") &&
                 double.IsNaN(longTermprimeAlgoKalmanMeanReversion.FilterResultUp.LastValue) &&
                 double.IsNaN(longTermprimeAlgoKalmanMeanReversion.FilterResultDown.LastValue)
                 )
