@@ -24,11 +24,11 @@ namespace cAlgo.Robots
     {
         private double _volumeInUnits;
 
-        private primeAlgoKalmanMeanReversion longTermprimeAlgoKalmanMeanReversion;
+        //private primeAlgoKalmanMeanReversion longTermprimeAlgoKalmanMeanReversion;
         private PrimeAlgoKFMRcore ltPrimeAlgoKFMRcore;
 
-        private primeAlgoKalmanMeanReversion slowprimeAlgoKalmanMeanReversion;
-        
+        //private primeAlgoKalmanMeanReversion slowprimeAlgoKalmanMeanReversion;
+        private PrimeAlgoKFMRcore stPrimeAlgoKFMRcore;
         
 
         [Parameter("Source", Group = "Fast MA")]
@@ -67,16 +67,20 @@ namespace cAlgo.Robots
         {
             _volumeInUnits = Symbol.QuantityToVolumeInUnits(VolumeInLots);
             
-            longTermprimeAlgoKalmanMeanReversion = Indicators.GetIndicator<primeAlgoKalmanMeanReversion>(MarketData.GetBars(TimeFrame.Renko20).ClosePrices, true, 30);
-            ltPrimeAlgoKFMRcore = Indicators.GetIndicator<PrimeAlgoKFMRcore>(MarketData.GetBars(TimeFrame.Renko20).ClosePrices, false, 10);
+            //longTermprimeAlgoKalmanMeanReversion = Indicators.GetIndicator<primeAlgoKalmanMeanReversion>(MarketData.GetBars(TimeFrame.Renko20).ClosePrices, true, 30);
+            ltPrimeAlgoKFMRcore = Indicators.GetIndicator<PrimeAlgoKFMRcore>(MarketData.GetBars(TimeFrame.Renko20).ClosePrices, true, 10);
             
 
             //fastPrimeAlgoKFMRcore = Indicators.GetIndicator<PrimeAlgoKFMRcore>(MarketData.GetBars(TimeFrame.Renko5).ClosePrices, true, FastMaPeriod);
-            slowprimeAlgoKalmanMeanReversion = Indicators.GetIndicator<primeAlgoKalmanMeanReversion>(MarketData.GetBars(TimeFrame.Renko5).ClosePrices, true, SlowMaPeriod);
+            //slowprimeAlgoKalmanMeanReversion = Indicators.GetIndicator<primeAlgoKalmanMeanReversion>(MarketData.GetBars(TimeFrame.Renko5).ClosePrices, true, SlowMaPeriod);
             
+            stPrimeAlgoKFMRcore = Indicators.GetIndicator<PrimeAlgoKFMRcore>(MarketData.GetBars(TimeFrame.Renko5).ClosePrices, true, 12);
             
             //fastPrimeAlgoKFMRcore.FilterResult.Line.Color = Color.Blue;
-            slowprimeAlgoKalmanMeanReversion.FilterResult.Line.Color = Color.Blue;
+            //slowprimeAlgoKalmanMeanReversion.FilterResult.Line.Color = Color.Blue;
+            
+            ltPrimeAlgoKFMRcore.FilterResult.Line.Color = Color.Blue;
+            stPrimeAlgoKFMRcore.FilterResult.Line.Color = Color.Red;
         }
 
         protected override void OnBarClosed()
@@ -107,13 +111,15 @@ namespace cAlgo.Robots
                 Print(reader.ToString());
             }
 
-            var ltDirection = "";
+            //var ltDirection = "";
             
             if (//fastPrimeAlgoKFMRcore.FilterResult.IsFalling() && 
                 //slowprimeAlgoKalmanMeanReversion.FilterResult.IsFalling() &&
-                ltDirection.Contains("up") &&
-                double.IsNaN(longTermprimeAlgoKalmanMeanReversion.FilterResultUp.LastValue) &&
-                double.IsNaN(longTermprimeAlgoKalmanMeanReversion.FilterResultDown.LastValue)
+                //ltDirection.Contains("up") 
+                //double.IsNaN(longTermprimeAlgoKalmanMeanReversion.FilterResultUp.LastValue) &&
+                //double.IsNaN(longTermprimeAlgoKalmanMeanReversion.FilterResultDown.LastValue)
+                !double.IsNaN(ltPrimeAlgoKFMRcore.FilterResultUp.Last(1)) &&
+                !double.IsNaN(stPrimeAlgoKFMRcore.FilterResultDown.Last(1))
                 )
             {
                 ClosePositions(TradeType.Buy);
@@ -121,17 +127,21 @@ namespace cAlgo.Robots
             
             if (//fastPrimeAlgoKFMRcore.FilterResult.IsRising() &&
                 //slowprimeAlgoKalmanMeanReversion.FilterResult.IsRising() &&
-                ltDirection.Contains("down") &&
-                double.IsNaN(longTermprimeAlgoKalmanMeanReversion.FilterResultUp.LastValue) &&
-                double.IsNaN(longTermprimeAlgoKalmanMeanReversion.FilterResultDown.LastValue)
+                //ltDirection.Contains("down") 
+                //double.IsNaN(longTermprimeAlgoKalmanMeanReversion.FilterResultUp.LastValue) &&
+                //double.IsNaN(longTermprimeAlgoKalmanMeanReversion.FilterResultDown.LastValue)
+                !double.IsNaN(ltPrimeAlgoKFMRcore.FilterResultDown.Last(1)) &&
+                !double.IsNaN(stPrimeAlgoKFMRcore.FilterResultUp.Last(1))
                 )
             {
                 ClosePositions(TradeType.Sell);
             }
             
+            
+            
             if (//fastPrimeAlgoKFMRcore.FilterResult.IsRising() &&
-                slowprimeAlgoKalmanMeanReversion.FilterResult.IsRising() &&
-                !double.IsNaN(longTermprimeAlgoKalmanMeanReversion.FilterResultUp.LastValue)
+                !double.IsNaN(ltPrimeAlgoKFMRcore.FilterResultUp.Last(1)) &&
+                !double.IsNaN(stPrimeAlgoKFMRcore.FilterResultUp.Last(1))
                 )
             {
                 ClosePositions(TradeType.Sell);
@@ -140,21 +150,21 @@ namespace cAlgo.Robots
                 {
                     ExecuteMarketOrder(TradeType.Buy, SymbolName, _volumeInUnits, Label, StopLossInPips, TakeProfitInPips);
                 }
-
-                
             }
-            else if (//fastPrimeAlgoKFMRcore.FilterResult.IsFalling() &&
-                    slowprimeAlgoKalmanMeanReversion.FilterResult.IsFalling() && 
-                    !double.IsNaN(longTermprimeAlgoKalmanMeanReversion.FilterResultDown.LastValue)
-                    )
+            
+            if (//fastPrimeAlgoKFMRcore.FilterResult.IsRising() &&
+                !double.IsNaN(ltPrimeAlgoKFMRcore.FilterResultDown.Last(1)) &&
+                !double.IsNaN(stPrimeAlgoKFMRcore.FilterResultDown.Last(1))
+                )
             {
-                ClosePositions(TradeType.Buy);
+                ClosePositions(TradeType.Sell);
                 
                 if (BotPositions.Length == 0)
                 {
-                    ExecuteMarketOrder(TradeType.Sell, SymbolName, _volumeInUnits, Label, StopLossInPips, TakeProfitInPips);
+                    ExecuteMarketOrder(TradeType.Buy, SymbolName, _volumeInUnits, Label, StopLossInPips, TakeProfitInPips);
                 }
             }
+            
         }
         
 
@@ -186,20 +196,20 @@ namespace cAlgo.Robots
             //else if (!double.IsNaN(longTermprimeAlgoKalmanMeanReversion.FilterResultUp.Last(0)))
             //    curr = "up"; 
              
-            res = res + $"LT: {GetLongTermDirection(1)} --> {GetLongTermDirection(0)}\n";
+            res = res + $"LT: {GetLongTermDirection(2)} --> {GetLongTermDirection(1)}\n";
             
             
-            prev = "none";
-            curr = "none";
+            // prev = "none";
+            // curr = "none";
             
-            if(!double.IsNaN(slowprimeAlgoKalmanMeanReversion.FilterResultDown.Last(1)))
+            if(!double.IsNaN(stPrimeAlgoKFMRcore.FilterResultDown.Last(2)))
                 prev = "down";
-            else if (!double.IsNaN(slowprimeAlgoKalmanMeanReversion.FilterResultUp.Last(1)))
+            else if (!double.IsNaN(stPrimeAlgoKFMRcore.FilterResultUp.Last(2)))
                 prev = "up";
                 
-            if(!double.IsNaN(slowprimeAlgoKalmanMeanReversion.FilterResultDown.Last(0)))
+            if(!double.IsNaN(stPrimeAlgoKFMRcore.FilterResultDown.Last(1)))
                 curr = "down";
-            else if (!double.IsNaN(slowprimeAlgoKalmanMeanReversion.FilterResultUp.Last(0)))
+            else if (!double.IsNaN(stPrimeAlgoKFMRcore.FilterResultUp.Last(1)))
                 curr = "up"; 
              
             res = res + $"ST: {prev} --> {curr}\n";
@@ -212,18 +222,12 @@ namespace cAlgo.Robots
         {
             string res = "none";
             
-            if (!double.IsNaN(longTermprimeAlgoKalmanMeanReversion.FilterResultUp.Last(index)))
+            if (!double.IsNaN(ltPrimeAlgoKFMRcore.FilterResultUp.Last(index)))
             {
-                res = "up(1)";
-            } else if (!double.IsNaN(longTermprimeAlgoKalmanMeanReversion.FilterResultDown.Last(index)))
-            {
-                res = "down(1)";
-            } else if (!double.IsNaN(ltPrimeAlgoKFMRcore.FilterResultUp.Last(index)))
-            {
-                res = "up(2)";
+                res = "up";
             } else if (!double.IsNaN(ltPrimeAlgoKFMRcore.FilterResultDown.Last(index)))
             {
-                res = "down(2)";
+                res = "down";
             }
             
             return res;
